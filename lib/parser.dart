@@ -14,10 +14,6 @@ class Parser {
         return op1 * op2;
       case '/':
         return op1 / op2;
-      case '%':
-        return op1 % op2;
-      case '^':
-        return pow(op1, op2);
       default:
         return 0;
     }
@@ -30,10 +26,6 @@ class Parser {
         return 0;
       case '*':
       case '/':
-      case '%':
-        return 1;
-      case '^':
-        return 2;
       default:
         return -1;
     }
@@ -45,8 +37,6 @@ class Parser {
       case '-':
       case '*':
       case '/':
-      case '^':
-      case '%':
         return true;
       default:
         return false;
