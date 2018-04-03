@@ -1,10 +1,13 @@
 import 'dart:collection';
 
+var digits = <String>['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+var operators = <String>['+', '-', '*', '/'];
+
 class Parser {
   const Parser();
 
-  num _eval(num op1, num op2, int op) {
-    switch (new String.fromCharCode(op)) {
+  num _eval(num op1, num op2, String op) {
+    switch (op) {
       case '+':
         return op1 + op2;
       case '-':
@@ -18,8 +21,8 @@ class Parser {
     }
   }
 
-  int _getPriority(num op) {
-    switch (new String.fromCharCode(op)) {
+  int _getPriority(String op) {
+    switch (op) {
       case '+':
       case '-':
         return 0;
@@ -31,24 +34,16 @@ class Parser {
     }
   }
 
-  bool _isOperator(num op) {
-    switch (new String.fromCharCode(op)) {
-      case '+':
-      case '-':
-      case '*':
-      case '/':
-        return true;
-      default:
-        return false;
-    }
+  bool _isOperator(String op) {
+    return operators.contains(op);
   }
 
-  bool _isDigit(int op) {
-    return op >= '0'.codeUnitAt(0) && op <= '9'.codeUnitAt(0);
+  bool _isDigit(String op) {
+    return digits.contains(op);
   }
 
   num parseExpression(String expr) {
-    Queue<int> operators = new ListQueue<int>();
+    Queue<String> operators = new ListQueue<String>();
     Queue<num> operands = new ListQueue<num>();
 
     // True if the last character was a digit
@@ -58,13 +53,13 @@ class Parser {
     // INIT
     operands.addLast(0);
 
-    expr.runes.forEach((int c) {
+    expr.split('').forEach((String c) {
       if (_isDigit(c)) {
         if (lastDig) {
           num last = operands.removeLast();
-          operands.addLast(last * 10 + (c - '0'.codeUnitAt(0)));
+          operands.addLast(last * 10 + int.parse(c));
         } else
-          operands.addLast(c - '0'.codeUnitAt(0));
+          operands.addLast(int.parse(c));
       } else if (_isOperator(c)) {
         if (!lastDig) throw new ArgumentError('Illegal expression');
 
@@ -76,8 +71,9 @@ class Parser {
               _getPriority(c) <= _getPriority(operators.last)) {
             num op1 = operands.removeLast();
             num op2 = operands.removeLast();
-            int op = operators.removeLast();
+            String op = operators.removeLast();
 
+            // op1 and op2 in reverse order!
             num res = _eval(op2, op1, op);
             operands.addLast(res);
           }
@@ -90,8 +86,9 @@ class Parser {
     while (operators.isNotEmpty) {
       num op1 = operands.removeLast();
       num op2 = operands.removeLast();
-      int op = operators.removeLast();
+      String op = operators.removeLast();
 
+      // op1 and op2 in reverse order!
       num res = _eval(op2, op1, op);
       operands.addLast(res);
     }
