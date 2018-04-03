@@ -25,6 +25,7 @@ class Parser {
         return 0;
       case '*':
       case '/':
+        return 1;
       default:
         return -1;
     }
