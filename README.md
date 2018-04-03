@@ -2,7 +2,8 @@
 
 A new Flutter project.
 
-## Getting Started
+## Screenshot
+![Video recording](video.gif)
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+## APK download
+![Download](release.apk)

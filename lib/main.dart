@@ -45,34 +45,68 @@ class Display extends StatefulWidget {
 
 class DisplayState extends State<Display> {
   var _expression = '';
-  var _resultDisplayed = false;
+  var _result = '';
 
   @override
   Widget build(BuildContext context) {
+    var views = <Widget>[
+      new Expanded(
+          flex: 1,
+          child: new Row(
+            children: <Widget>[
+              new Expanded(
+                  child: new Text(
+                    _expression,
+                    textAlign: TextAlign.right,
+                    style: new TextStyle(
+                      fontSize: 40.0,
+                      color: Colors.white,
+                    ),
+                  ))
+            ],
+          )),
+    ];
+
+    if (_result.isNotEmpty) {
+      views.add(new Expanded(
+          flex: 1,
+          child: new Row(
+            children: <Widget>[
+              new Expanded(
+                  child: new Text(
+                    _result,
+                    textAlign: TextAlign.right,
+                    style: new TextStyle(
+                      fontSize: 40.0,
+                      color: Colors.white,
+                    ),
+                  ))
+            ],
+          )),
+      );
+    }
+
     return new Expanded(
         flex: 2,
         child: new Container(
           color: Theme
               .of(context)
               .primaryColor,
-          child: new Center(
-            child: new Text(
-              _expression,
-              textAlign: TextAlign.end,
-              style: new TextStyle(
-                fontSize: 40.0,
-                color: Colors.white,
-              ),
-            ),
+          padding: const EdgeInsets.all(16.0),
+          child: new Column(
+            children: views,
           ),
         ));
   }
 }
 
-bool _addKey(String key) {
+void _addKey(String key) {
   var _expr = _displayState._expression;
-  var _result = false;
-  if (_displayState._resultDisplayed) _expr = '';
+  var _result = '';
+  if (_displayState._result.isNotEmpty) {
+    _expr = '';
+    _result = '';
+  }
 
   if (operators.contains(key)) {
     // Handle as an operator
@@ -91,18 +125,16 @@ bool _addKey(String key) {
   } else if (key == '=') {
     try {
       var parser = const Parser();
-      _expr += ' = ' + parser.parseExpression(_expr).toString();
-      _result = true;
+      _result = parser.parseExpression(_expr).toString();
     } on Error {
-      return false;
+      _result = 'Error';
     }
   }
   // ignore: invalid_use_of_protected_member
   _displayState.setState(() {
     _displayState._expression = _expr;
-    _displayState._resultDisplayed = _result;
+    _displayState._result = _result;
   });
-  return true;
 }
 
 class Keyboard extends StatelessWidget {
@@ -122,11 +154,11 @@ class Keyboard extends StatelessWidget {
                 crossAxisSpacing: 4.0,
                 children: <String>[
                   // @formatter:off
-              '7', '8', '9', '/',
-              '4', '5', '6', '*',
-              '1', '2', '3', '-',
-              'C', '0', '=', '+',
-              // @formatter:on
+                  '7', '8', '9', '/',
+                  '4', '5', '6', '*',
+                  '1', '2', '3', '-',
+                  'C', '0', '=', '+',
+                  // @formatter:on
                 ].map((key) {
                   return new GridTile(
                     child: new KeyboardKey(key),
@@ -158,12 +190,7 @@ class KeyboardKey extends StatelessWidget {
           .of(context)
           .scaffoldBackgroundColor,
       onPressed: () {
-        var success = _addKey(_keyValue);
-        if (!success) {
-          Scaffold.of(context).showSnackBar(new SnackBar(
-            content: new Text('Error'),
-          ));
-        }
+        _addKey(_keyValue);
       },
     );
   }
