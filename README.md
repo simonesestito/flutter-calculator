@@ -2,8 +2,8 @@
 
 A new Flutter project.
 
-## Screenshot
+## Video recording
 ![Video recording](video.gif)
 
 ## APK download
-![Download](release.apk)
+[Download](https://github.com/simonesestito/flutter-calculator/blob/master/release.apk?raw=true)
